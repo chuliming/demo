@@ -12,6 +12,12 @@
 
 [Github OAuth](https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app/)
 
+[OkHttp](https://square.github.io/okhttp/)
+
+[Mvnrepository](https://mvnrepository.com/)
+
+[fastjson](https://mvnrepository.com/artifact/com.alibaba/fastjson)
+
 ## 工具
 [Git](https://git-scm.com/)
 
