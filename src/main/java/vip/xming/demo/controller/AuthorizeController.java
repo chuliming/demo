@@ -7,7 +7,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import vip.xming.demo.dto.AccessTokenDTO;
 import vip.xming.demo.dto.GithubUser;
+import vip.xming.demo.mapper.UserMapper;
+import vip.xming.demo.model.User;
 import vip.xming.demo.provider.GithubProvider;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.UUID;
 
 @Controller
 public class AuthorizeController {
@@ -16,13 +21,18 @@ public class AuthorizeController {
 
     @Value("${github.client.id}")
     private String clientId;
+
     @Value("${github.client.secret}")
     private String clientSecret;
+
     @Value("${github.redirect.uri}")
     private String redirectUri;
 
+    @Autowired
+    private UserMapper userMapper;
+
     @RequestMapping("/callback")
-    public String callback(@RequestParam(name = "code") String code, @RequestParam(name = "state") String state) {
+    public String callback(@RequestParam(name = "code") String code, @RequestParam(name = "state") String state, HttpServletRequest request) {
         AccessTokenDTO accessTokenDTO = new AccessTokenDTO();
         accessTokenDTO.setClient_id(clientId);
         accessTokenDTO.setClient_secret(clientSecret);
@@ -30,8 +40,21 @@ public class AuthorizeController {
         accessTokenDTO.setRedirect_uri(redirectUri);
         accessTokenDTO.setState(state);
         String accessToken = githubProvider.getAccessToken(accessTokenDTO);
-        GithubUser user = githubProvider.getUser(accessToken);
-        System.out.println(user.getName());
-        return "index";
+        GithubUser githubUser = githubProvider.getUser(accessToken);
+        if (githubUser != null) {
+            User user = new User();
+            user.setAccountId(String.valueOf(githubUser.getId()));
+            user.setName(githubUser.getName());
+            user.setToken(UUID.randomUUID().toString());
+            user.setGmtCreate(System.currentTimeMillis());
+            user.setGmtModified(user.getGmtCreate());
+            userMapper.insert(user);
+//            登录成功，写cookie、session，跳转index
+            request.getSession().setAttribute("user", githubUser);
+            return "redirect:/";
+        } else {
+//            登陆失败，跳转index
+            return "redirect:/";
+        }
     }
 }
