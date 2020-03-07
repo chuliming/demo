@@ -26,10 +26,13 @@
 
 [spring boot](https://docs.spring.io/spring-boot/docs/2.0.0.RC1/reference/htmlsingle/#boot-features-connect-to-production-database)
 
+[flywaydb](https://flywaydb.org/getstarted/firststeps/maven)
+
 ## 工具
 [Git](https://git-scm.com/)
 
 [Visual Paradigm](https://www.visual-paradigm.com/cn/download/community.jsp)
+
 ## 脚本
 ```sql
 create table USER
