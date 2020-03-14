@@ -2,31 +2,21 @@ package vip.xming.demo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import vip.xming.demo.mapper.UserMapper;
-import vip.xming.demo.model.User;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
+import org.springframework.web.bind.annotation.RequestParam;
+import vip.xming.demo.dto.PaginationDTO;
+import vip.xming.demo.service.QuestionService;
 
 @Controller
 public class IndexController {
     @Autowired
-    private UserMapper userMapper;
+    private QuestionService questionService;
 
     @GetMapping("/")
-    public String helloWorld(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("token")) {
-                String token = cookie.getValue();
-                User user = userMapper.findByToken(token);
-                if (user != null) {
-                    request.getSession().setAttribute("user", user);
-                }
-                break;
-            }
-        }
+    public String helloWorld(Model model, @RequestParam(name = "page", defaultValue = "1") Integer page, @RequestParam(name = "size", defaultValue = "5") Integer size) {
+        PaginationDTO pagination = questionService.List(page, size);
+        model.addAttribute("pagination", pagination);
         return "index";
     }
 }

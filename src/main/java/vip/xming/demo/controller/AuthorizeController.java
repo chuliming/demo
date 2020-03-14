@@ -3,6 +3,7 @@ package vip.xming.demo.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import vip.xming.demo.dto.AccessTokenDTO;
@@ -10,6 +11,7 @@ import vip.xming.demo.dto.GithubUser;
 import vip.xming.demo.mapper.UserMapper;
 import vip.xming.demo.model.User;
 import vip.xming.demo.provider.GithubProvider;
+import vip.xming.demo.service.UserService;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -31,7 +33,7 @@ public class AuthorizeController {
     private String redirectUri;
 
     @Autowired
-    private UserMapper userMapper;
+    private UserService userService;
 
     @RequestMapping("/callback")
     public String callback(@RequestParam(name = "code") String code, @RequestParam(name = "state") String state, HttpServletRequest request, HttpServletResponse response) {
@@ -49,9 +51,8 @@ public class AuthorizeController {
             user.setName(githubUser.getName());
             String token = UUID.randomUUID().toString();
             user.setToken(token);
-            user.setGmtCreate(System.currentTimeMillis());
-            user.setGmtModified(user.getGmtCreate());
-            userMapper.insert(user);
+            user.setAvatarUrl(githubUser.getAvatarUrl());
+            userService.createOrUpdate(user);
             response.addCookie(new Cookie("token", token));
 //            登录成功，写cookie、session，跳转index
 //            request.getSession().setAttribute("user", githubUser);
@@ -60,5 +61,14 @@ public class AuthorizeController {
 //            登陆失败，跳转index
             return "redirect:/";
         }
+    }
+
+    @GetMapping("/logout")
+    public String logout(HttpServletRequest request, HttpServletResponse response) {
+        request.getSession().removeAttribute("user");
+        Cookie cookie = new Cookie("token", null);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+        return "redirect:/";
     }
 }

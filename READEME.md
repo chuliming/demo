@@ -26,23 +26,35 @@
 
 [spring boot](https://docs.spring.io/spring-boot/docs/2.0.0.RC1/reference/htmlsingle/#boot-features-connect-to-production-database)
 
-[flywaydb](https://flywaydb.org/getstarted/firststeps/maven)
+[thymeleaf](https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#setting-attribute-values)
 
+[Spring Web on Servlet Stack](https://docs.spring.io/spring/docs/5.0.3.RELEASE/spring-framework-reference/web.html)
+
+[mybatis spring boot autoconfigure](http://mybatis.org/spring-boot-starter/mybatis-spring-boot-autoconfigure/)
+
+[mybatis generator](https://mybatis.org/generator/index.html)
 ## 工具
 [Git](https://git-scm.com/)
 
 [Visual Paradigm](https://www.visual-paradigm.com/cn/download/community.jsp)
 
+[flyway](https://flywaydb.org/getstarted/firststeps/maven)
+
+[Lombok](https://projectlombok.org/setup/maven)
+
 ## 脚本
 ```sql
 create table USER
 (
-  ID           INTEGER default NEXT VALUE FOR "PUBLIC"."SYSTEM_SEQUENCE_C3B3085E_D211_40FF_8C81_D8419A208BE7"
-    primary key,
+  ID           int AUTO_INCREMENT primary key NOT NULL,
   ACCOUNT_ID   VARCHAR(100),
   NAME         VARCHAR(50),
   TOKEN        CHAR(36),
   GMT_CREATE   BIGINT,
   GMT_MODIFIED BIGINT
 );
+```
+```bash
+mvn flyway:migrate
+mvn -Dmybatis.generator.overwrite=true mybatis-generator:generate
 ```
